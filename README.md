@@ -18,9 +18,10 @@ This tool is designed to automate the process of building Go programs for multip
 ### Installation
 1. Clone the repository to your local machine:
    ```
-   git clone [repository-url]
+   git clone https://github.com/shadowraven65/gobuilder.git
    ```
-2. Place the binary of the builder script in a directory included in your PATH (e.g., `/usr/local/bin`) for easy access.
+2. Or download the binary from the latest release (Only Linux amd64 as of now)
+3. Place the binary of the builder script in a directory included in your PATH (e.g., `/usr/local/bin`) for easy access.
 
 ### Configuration
 Create a `buildconfig.json` file in the root of your Go project with the following structure:
@@ -38,12 +39,12 @@ Create a `buildconfig.json` file in the root of your Go project with the followi
 ### Usage
 Run the builder script from the root of your Go project:
 ```
-builder
+gobuilder
 ```
 
 To build a specific Go file if there is more than 1:
 ```
-builder -file yourfile.go
+gobuilder -file yourfile.go
 ```
 Keep in mind you will still build for all in the json  
 ## Contributing

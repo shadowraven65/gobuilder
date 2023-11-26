@@ -37,7 +37,8 @@ func main() {
         fmt.Printf("Error parsing JSON: %v\n", err)
         return
     }
-
+    
+    versionFlag := flag.String("version", "dev", "Version to embed in the binary")
     goFile := flag.String("file", "", "specific Go file to build (optional)")
     flag.Parse()
 
@@ -58,9 +59,9 @@ func main() {
     // Iterate over the targets and build for each.
     for _, target := range config.Targets {
         fmt.Printf("Building for OS: %s, Arch: %s", target.OS, target.Arch)
-        err = buildTarget(scriptName, target) // Removed 'var' keyword
+        err = buildTarget(scriptName, target, *versionFlag) // Removed 'var' keyword
         if err != nil {
-            fmt.Printf("Error building for target %v: %v", target, err)
+            fmt.Printf("Error building for target %v: %v\n", target, err)
         }
     }
 }
@@ -70,24 +71,30 @@ func findGoFile() (string, error) {
     if err != nil {
         return "", err
     }
+
     for _, file := range files {
         if filepath.Ext(file.Name()) == ".go" {
             return strings.TrimSuffix(file.Name(), ".go"), nil
         }
     }
+
     return "", fmt.Errorf("no .go file found in the current directory")
 }
 
 // buildTarget runs the go build command for the given target.
-func buildTarget(scriptName string, target Target) error {
+func buildTarget(scriptName string, target Target, version string) error {
     // Define the output binary name format: scriptname_os_arch
     outputBinary := fmt.Sprintf("%s_%s_%s", scriptName, target.OS, target.Arch)
+
     // Building the command with -trimpath and -o flags
-    cmd := exec.Command("go", "build", "-trimpath", "-o", outputBinary)
+    ldflags := fmt.Sprintf("-ldflags=-X main.version=%s", version)
+    cmd := exec.Command("go", "build", ldflags, "-trimpath", "-o", outputBinary)
     cmd.Env = append(os.Environ(), "GOOS="+target.OS, "GOARCH="+target.Arch)
+
     // Executing the command
     output, err := cmd.CombinedOutput()
     fmt.Println(string(output))
+
     return err
 }
 
